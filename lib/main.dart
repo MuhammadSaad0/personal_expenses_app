@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import './user_transactions.dart';
+import './new_transaction.dart';
+import './transaction.dart';
+import './transactions_list.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,9 +15,38 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  final titleController = TextEditingController();
-  final amountController = TextEditingController();
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final List<Transaction> _userTransactions = [
+    Transaction(
+        id: "t1", title: "New Shoes", amount: 69.99, date: DateTime.now()),
+    Transaction(
+        id: "t2", title: "Groceries", amount: 16.54, date: DateTime.now())
+  ];
+  void _addNewTransaction(String title, double amount) {
+    final newTx = Transaction(
+        title: title,
+        amount: amount,
+        date: DateTime.now(),
+        id: DateTime.now().toString());
+
+    setState(() {
+      _userTransactions.add(newTx);
+    });
+  }
+
+  void _startAddNewTxn(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      builder: (bctx) {
+        return NewTransaction(_addNewTransaction);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +58,15 @@ class MyHomePage extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () {},
-          )
+            onPressed: () => _startAddNewTxn(context),
+          ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+          children: <Widget>[
             const Card(
               elevation: 5,
               child: SizedBox(
@@ -43,14 +74,14 @@ class MyHomePage extends StatelessWidget {
                 child: Text("CHART!"),
               ),
             ),
-            UserTransactions()
+            TransactionList(_userTransactions),
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () => _startAddNewTxn(context),
       ),
     );
   }
