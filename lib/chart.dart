@@ -10,7 +10,7 @@ class Chart extends StatelessWidget {
   List<Map<String, Object>> get groupedTxns {
     return List.generate(7, (index) {
       final weekDay = DateTime.now().subtract(
-        Duration(days: index),
+        Duration(days: 6 - index),
       );
       var totalSum = 0.0;
       for (var i = 0; i < recenttxns.length; i++) {
@@ -21,7 +21,7 @@ class Chart extends StatelessWidget {
         }
       }
       return {
-        'day': DateFormat.E().format(weekDay).substring(0, 1),
+        'day': DateFormat.E().format(weekDay).substring(0, 3),
         "amount": totalSum
       };
     });
