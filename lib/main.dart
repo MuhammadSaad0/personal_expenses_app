@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './new_transaction.dart';
 import './transaction.dart';
 import './transactions_list.dart';
+import './chart.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,7 +10,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter App',
+      title: 'Personal Expenses',
+      theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.amber),
+          fontFamily: "Quicksand"),
       home: MyHomePage(),
     );
   }
@@ -22,11 +26,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _userTransactions = [
-    Transaction(
-        id: "t1", title: "New Shoes", amount: 69.99, date: DateTime.now()),
-    Transaction(
-        id: "t2", title: "Groceries", amount: 16.54, date: DateTime.now())
+    // Transaction(
+    //     id: "t1", title: "New Shoes", amount: 69.99, date: DateTime.now()),
+    // Transaction(
+    //     id: "t2", title: "Groceries", amount: 16.54, date: DateTime.now())
   ];
+
+  List<Transaction> get _recentTxns {
+    return _userTransactions.where((tx) {
+      return tx.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
+    }).toList();
+  }
+
   void _addNewTransaction(String title, double amount) {
     final newTx = Transaction(
         title: title,
@@ -52,9 +63,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Personal Expenses",
-        ),
+        title: const Text("Personal Expenses",
+            style: TextStyle(fontFamily: "OpenSans")),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -67,13 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const Card(
-              elevation: 5,
-              child: SizedBox(
-                width: double.infinity,
-                child: Text("CHART!"),
-              ),
-            ),
+            Chart(_recentTxns),
             TransactionList(_userTransactions),
           ],
         ),
