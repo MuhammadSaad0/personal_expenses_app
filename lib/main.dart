@@ -4,7 +4,12 @@ import './transaction.dart';
 import './transactions_list.dart';
 import './chart.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations(
+  //     [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -31,6 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // Transaction(
     //     id: "t2", title: "Groceries", amount: 16.54, date: DateTime.now())
   ];
+
+  bool _showChart = false;
 
   List<Transaction> get _recentTxns {
     return _userTransactions.where((tx) {
@@ -69,24 +76,63 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final inlandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final appBar = AppBar(
+      title: const Text("Personal Expenses",
+          style: TextStyle(fontFamily: "OpenSans")),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _startAddNewTxn(context),
+        ),
+      ],
+    );
+    final txListWidget = Container(
+        height: (MediaQuery.of(context).size.height -
+                appBar.preferredSize.height -
+                MediaQuery.of(context).padding.top) *
+            0.6,
+        child: TransactionList(_userTransactions, _deleteTxn));
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Personal Expenses",
-            style: TextStyle(fontFamily: "OpenSans")),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _startAddNewTxn(context),
-          ),
-        ],
-      ),
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Chart(_recentTxns),
-            TransactionList(_userTransactions, _deleteTxn),
+            if (inlandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Show Chart"),
+                  Switch(
+                    value: _showChart,
+                    onChanged: (value) {
+                      setState(() {
+                        _showChart = value;
+                      });
+                    },
+                  )
+                ],
+              ),
+            if (!inlandscape)
+              Container(
+                  height: (MediaQuery.of(context).size.height -
+                          appBar.preferredSize.height -
+                          MediaQuery.of(context).padding.top) *
+                      0.3,
+                  child: Chart(_recentTxns)),
+            if (!inlandscape) txListWidget,
+            if (inlandscape)
+              _showChart
+                  ? Container(
+                      height: (MediaQuery.of(context).size.height -
+                              appBar.preferredSize.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.7,
+                      child: Chart(_recentTxns))
+                  : txListWidget
           ],
         ),
       ),

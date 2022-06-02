@@ -20,7 +20,6 @@ class TransactionList extends StatelessWidget {
       //     )
       //   ],
       // ),
-      height: 405,
       child: transactions.isEmpty
           ? Column(
               children: [
@@ -33,43 +32,50 @@ class TransactionList extends StatelessWidget {
                 Flexible(child: Image.asset("./images/waiting.png"))
               ],
             )
-          : RawScrollbar(
-              thumbColor: Colors.amber,
-              thumbVisibility: true,
-              thickness: 6,
-              radius: Radius.circular(20),
-              child: ListView(
-                children: transactions.map((tx) {
-                  return Card(
-                      elevation: 6,
-                      margin: EdgeInsets.all(6),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                            radius: 30,
-                            backgroundColor: Colors.amber,
-                            child: Padding(
-                                padding: EdgeInsets.all(6),
-                                child: FittedBox(
-                                    child: Text(
-                                  "\$${tx.amount}",
-                                  style: TextStyle(color: Colors.black),
-                                )))),
-                        title: Text(tx.title,
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold)),
-                        subtitle: Text(
-                          DateFormat.yMMMMd("en_US").format(tx.date),
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          color: Theme.of(context).errorColor,
-                          onPressed: () => deltxn(tx.id),
-                        ),
-                      ));
-                }).toList(),
-              ),
+          : ListView(
+              children: transactions.map((tx) {
+                return Card(
+                    elevation: 6,
+                    margin: EdgeInsets.all(6),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.amber,
+                          child: Padding(
+                              padding: EdgeInsets.all(6),
+                              child: FittedBox(
+                                  child: Text(
+                                "\$${tx.amount}",
+                                style: TextStyle(color: Colors.black),
+                              )))),
+                      title: Text(tx.title,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold)),
+                      subtitle: Text(
+                        DateFormat.yMMMMd("en_US").format(tx.date),
+                      ),
+                      trailing: MediaQuery.of(context).size.width > 350
+                          ? TextButton.icon(
+                              icon: Icon(
+                                Icons.delete,
+                                color: Theme.of(context).errorColor,
+                              ),
+                              label: Text(
+                                "Delete",
+                                style: TextStyle(
+                                    color: Theme.of(context).errorColor),
+                              ),
+                              onPressed: () {},
+                            )
+                          : IconButton(
+                              icon: Icon(Icons.delete),
+                              color: Theme.of(context).errorColor,
+                              onPressed: () => deltxn(tx.id),
+                            ),
+                    ));
+              }).toList(),
             ),
     );
   }
